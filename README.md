@@ -7,7 +7,7 @@ A **high-performance C++ file encryption and decryption system** with support fo
 ## 🚀 Features
 
 - 🔄 **Encrypts and decrypts entire directories**
-- ⚙️ **Multithreaded & Multiprocessed execution**
+- ⚙️ **Sequential, Multithreaded & Multiprocessed execution**
 - 🧠 **Shared Memory + Semaphores** for process synchronization
 - 📁 Handles **999+ files** with ease (thanks to auto-generator)
 - 🔑 Reads secret key from `.env` for enhanced security
@@ -49,6 +49,30 @@ Encrypt-Decrypt/
 2. It recursively finds all text files and pushes them into a **shared task queue**.
 3. **Worker threads or child processes** pick up tasks and perform the specified action using a secret key from `.env`.
 4. The result is a fully encrypted or decrypted directory, ready to use.
+
+---
+
+## 📸 Performance Comparison
+
+The following benchmarks were taken using 999 test files in a directory named `test/` on a MacBook Air (M2). Each mode was timed independently.
+
+| Execution Mode      | Action     | Time (seconds) |
+|---------------------|------------|----------------|
+| Sequential (Single) | ENCRYPT    | 2.25967        |
+| Sequential (Single) | DECRYPT    | 2.31632        |
+| Multiprocessing     | ENCRYPT    | 1.50106        |
+| Multiprocessing     | DECRYPT    | 1.51997        |
+| Multithreading      | ENCRYPT    | 1.38807        |
+| Multithreading      | DECRYPT    | 1.69876        |
+
+
+📷 Screenshots of terminal outputs:
+
+![Sequential (Single)](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Sequential.png)
+![Multiprocessing](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Multiprocessing.png)
+![Multithreading](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Multithreading.png)
+
+> ✅ **Multithreaded mode is the fastest overall**, with up to 40% improvement over sequential processing.
 
 ---
 
