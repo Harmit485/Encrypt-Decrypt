@@ -2,6 +2,8 @@
 
 A **high-performance C++ file encryption and decryption system** with support for both **multithreading** and **multiprocessing**. It can efficiently process hundreds of files using shared memory and semaphores, making it ideal for benchmarking concurrent file operations.
 
+![Architecture](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/EnDe.png)
+
 ---
 
 ## 🚀 Features
