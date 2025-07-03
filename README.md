@@ -65,7 +65,7 @@ flowchart TD
 
     %% V2
     Version -- V2 --> V2Start["V2: Multiprocessing"]:::v2
-    V2Start --> Shared2["Shared Memory + Semaphores"]:::v2 --> Queue2["📦 Queue Tasks"]:::v2
+    V2Start --> Shared2["Shared Memory + Semaphores"]:::v2 --> Queue2["Queue Tasks"]:::v2
     Queue2 --> Forks2["Fork Child Processes"]:::v2
     Forks2 --> C2a["Child 1"]:::child
     Forks2 --> C2b["Child 2"]:::child
@@ -74,7 +74,7 @@ flowchart TD
 
     %% V3
     Version -- V3 --> V3Start["V3: MultiProc + Threads"]:::v3
-    V3Start --> Shared3["Shared Memory + Semaphores"]:::v3 --> Queue3["📦 Queue Tasks"]:::v3
+    V3Start --> Shared3["Shared Memory + Semaphores"]:::v3 --> Queue3["Queue Tasks"]:::v3
     Queue3 --> Forks3["Fork Child Processes"]:::v3
     Forks3 --> C3a["Child 1"]:::child --> T3a1["Thread 1"]:::thread & T3a2["Thread 2"]:::thread --> Join3a["Join"]:::child
     Forks3 --> C3b["Child 2"]:::child --> T3b1["Thread 1"]:::thread & T3b2["Thread 2"]:::thread --> Join3b["Join"]:::child
