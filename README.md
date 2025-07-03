@@ -7,7 +7,7 @@
 
 * 🔄 **Encrypts and decrypts entire directories**
 * ⚙️ **Supports Sequential, Multiprocessing, and Hybrid (MultiProcessing + MultiThreading) modes**
-* 🧠 **Shared Memory** for efficient inter-process communication + **Semaphores** for efficient process synchronization
+* 🧠 **Shared Memory** for efficient IPC + **Semaphores** for efficient process synchronization
 * 📁 Handles **10,000+ files** with ease (auto-generated test cases)
 * 🔑 Uses `.env` file to securely read the secret key
 * 🧪 Python script to generate massive test datasets
