@@ -60,12 +60,12 @@ The following benchmarks were taken using 999 test files in a directory named `t
 
 | Execution Mode      | Action     | Time (seconds) |
 |---------------------|------------|----------------|
-| Sequential (Single) | ENCRYPT    | 2.25967        |
-| Sequential (Single) | DECRYPT    | 2.31632        |
-| Multiprocessing     | ENCRYPT    | 1.50106        |
-| Multiprocessing     | DECRYPT    | 1.51997        |
-| Multithreading      | ENCRYPT    | 1.38807        |
-| Multithreading      | DECRYPT    | 1.69876        |
+| V1 - Sequential     | ENCRYPT    | 2.25967        |
+| V1 - Sequential     | DECRYPT    | 2.31632        |
+| V2 - Multiprocessing| ENCRYPT    | 1.50106        |
+| V2 - Multiprocessing| DECRYPT    | 1.51997        |
+| V3 - Nested         | ENCRYPT    | 1.38807        |
+| V3 - Nested         | DECRYPT    | 1.69876        |
 
 
 📷 Screenshots of terminal outputs:
@@ -74,7 +74,7 @@ The following benchmarks were taken using 999 test files in a directory named `t
 ![Multiprocessing](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Multiprocessing.png)
 ![Multithreading](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Multithreading.png)
 
-> ✅ **Multithreaded mode is the fastest overall**, with up to 40% improvement over sequential processing.
+> ✅ **V3 - Multiprocessing with Nested Multithreading is the fastest overall**, with up to 40% improvement over sequential processing.
 
 ---
 

@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX = /opt/homebrew/bin/g++-15
-CXXFLAGS = -std=c++17 -g -Wall \
+CXXFLAGS = -std=c++17 -g -Wall -pthread \
            -I. \
            -Isrc/app/encryptDecrypt \
            -Isrc/app/fileHandling \
@@ -31,11 +31,11 @@ all: $(MAIN_TARGET) $(CRYPTION_TARGET)
 
 # Build main executable
 $(MAIN_TARGET): $(MAIN_OBJ)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@ -pthread
 
 # Build cryption executable
 $(CRYPTION_TARGET): $(CRYPTION_OBJ)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@ -pthread
 
 # Compile .cpp to .o
 %.o: %.cpp
