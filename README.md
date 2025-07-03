@@ -1,31 +1,27 @@
 # 🔐 Encrypt-Decrypt
-
-A **high-performance C++ file encryption and decryption system** with support for both **multithreading** and **multiprocessing**. It can efficiently process hundreds of files using shared memory and semaphores, making it ideal for benchmarking concurrent file operations.
-
-![Architecture](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/EnDe.png)
-
+---
+> A **high-performance** C++ system for encrypting and decrypting files, built with robust support for both **multiprocessing & multithreading**. Leveraging **shared memory and semaphores**, it seamlessly handles thousands of files in parallel — making it ideal for benchmarking and stress-testing concurrent file operations.
 ---
 
 ## 🚀 Features
 
-- 🔄 **Encrypts and decrypts entire directories**
-- ⚙️ **Sequential, Multithreaded & Multiprocessed execution**
-- 🧠 **Shared Memory + Semaphores** for process synchronization
-- 📁 Handles **999+ files** with ease (thanks to auto-generator)
-- 🔑 Reads secret key from `.env` for enhanced security
-- 🧪 Includes a Python test file generator
-- 📦 Simple to build using `Makefile`
+* 🔄 **Encrypts and decrypts entire directories**
+* ⚙️ **Supports Sequential, Multiprocessing, and Hybrid (MultiProcessing + MultiThreading) modes**
+* 🧠 **Shared Memory** for efficient inter-process communication + **Semaphores** for efficient process synchronization
+* 📁 Handles **10,000+ files** with ease (auto-generated test cases)
+* 🔑 Uses `.env` file to securely read the secret key
+* 🧪 Python script to generate massive test datasets
+* 📦 Build-ready with a single `Makefile`
 
 ---
 
 ## 📂 Project Structure
 
 ```
-
 Encrypt-Decrypt/
 ├── main.cpp                    # Main entry point
 ├── Makefile                    # Build automation
-├── makeDirs.py                 # Generates 999 test files
+├── makeDirs.py                 # Generates test files
 ├── src/
 │   └── app/
 │       ├── encryptDecrypt/
@@ -40,57 +36,90 @@ Encrypt-Decrypt/
 │           ├── ProcessManagement.cpp  # Thread/Process manager
 │           ├── ProcessManagement.hpp
 │           └── Task.hpp       # Represents encryption/decryption task
-
-````
+```
 
 ---
 
 ## ⚙️ How It Works
 
-1. You run the program and specify a **directory path** and **action** (`ENCRYPT` or `DECRYPT`).
-2. It recursively finds all text files and pushes them into a **shared task queue**.
-3. **Worker threads or child processes** pick up tasks and perform the specified action using a secret key from `.env`.
-4. The result is a fully encrypted or decrypted directory, ready to use.
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'background': '#000000'}}}%%
+flowchart TD
+    classDef common fill:#e0f7fa,stroke:#006064,stroke-width:2px;
+    classDef v1 fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef v2 fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
+    classDef v3 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef child fill:#fce4ec,stroke:#ad1457,stroke-width:1.5px;
+    classDef thread fill:#ede7f6,stroke:#4527a0,stroke-width:1.5px;
+    classDef End fill:#e0e0e0,stroke:#424242,stroke-width:2px;
+
+    Start(["Start"]):::common --> Inputs["Get Inputs (Path, Action, Version)"]:::common
+    Inputs --> CheckDir{"📁 Dir Exists?"}:::common
+    CheckDir -- No --> End(["End"]):::End
+    CheckDir -- Yes --> Setup["⚙️ Setup (.env, Stream)"]:::common
+    Setup --> Version{"🔀 Version?"}:::common
+
+    %% V1
+    Version -- V1 --> V1Start["V1: Sequential"]:::v1
+    V1Start --> Queue1["Queue Tasks"]:::v1 --> Process1["🛠️ Process One-by-One"]:::v1 --> End
+
+    %% V2
+    Version -- V2 --> V2Start["V2: Multiprocessing"]:::v2
+    V2Start --> Shared2["Shared Memory + Semaphores"]:::v2 --> Queue2["📦 Queue Tasks"]:::v2
+    Queue2 --> Forks2["Fork Child Processes"]:::v2
+    Forks2 --> C2a["Child 1"]:::child
+    Forks2 --> C2b["Child 2"]:::child
+    C2a --> Wait2["⏳ Wait All Exit"]:::v2 --> End
+    C2b --> Wait2
+
+    %% V3
+    Version -- V3 --> V3Start["V3: MultiProc + Threads"]:::v3
+    V3Start --> Shared3["Shared Memory + Semaphores"]:::v3 --> Queue3["📦 Queue Tasks"]:::v3
+    Queue3 --> Forks3["Fork Child Processes"]:::v3
+    Forks3 --> C3a["Child 1"]:::child --> T3a1["Thread 1"]:::thread & T3a2["Thread 2"]:::thread --> Join3a["Join"]:::child
+    Forks3 --> C3b["Child 2"]:::child --> T3b1["Thread 1"]:::thread & T3b2["Thread 2"]:::thread --> Join3b["Join"]:::child
+    Join3a --> Wait3["⏳ Wait All Exit"]:::v3 --> End
+    Join3b --> Wait3
+```
 
 ---
 
 ## 📸 Performance Comparison
 
-The following benchmarks were taken using 999 test files in a directory named `test/` on a MacBook Air (M2). Each mode was timed independently.
+Benchmarked on a MacBook Air (M2, 8-core). Each mode was tested using 10,000 files of different sizes.
 
-| Execution Mode      | Action     | Time (seconds) |
-|---------------------|------------|----------------|
-| V1 - Sequential     | ENCRYPT    | 2.25967        |
-| V1 - Sequential     | DECRYPT    | 2.31632        |
-| V2 - Multiprocessing| ENCRYPT    | 1.50106        |
-| V2 - Multiprocessing| DECRYPT    | 1.51997        |
-| V3 - Nested         | ENCRYPT    | 1.38807        |
-| V3 - Nested         | DECRYPT    | 1.69876        |
+| Version | Method                      | Files  | Chars/File | Encryption (s) | Decryption (s) |
+| ------- | --------------------------- | ------ | ---------- | -------------- | -------------- |
+| V1      | Sequential (Baseline)       | 10,000 | 1,000      | 2.17448        | 2.09383        |
+| V2      | Multiprocessing             | 10,000 | 1,000      | 1.44115        | 1.51795        |
+| V3      | Multiprocessing + Threading | 10,000 | 1,000      | **0.264162**   | **0.258924**   |
+| V1      | Sequential (Baseline)       | 10,000 | 10,000     | 22.3493        | 22.3638        |
+| V2      | Multiprocessing             | 10,000 | 10,000     | 14.2879        | 16.8432        |
+| V3      | Multiprocessing + Threading | 10,000 | 10,000     | **1.90524**    | **1.62334**    |
+| V1      | Sequential (Baseline)       | 10,000 | 100,000    | ∞              | ∞              |
+| V2      | Multiprocessing             | 10,000 | 100,000    | 131.125        | 132.205        |
+| V3      | Multiprocessing + Threading | 10,000 | 100,000    | **1.72663**    | **2.30900**    |
 
+> ✅ **Version 3 (Hybrid Multiprocessing + Threads)** outperforms all others, especially on large file sets.
 
-📷 Screenshots of terminal outputs:
-
-![Sequential (Single)](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Sequential.png)
-![Multiprocessing](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Multiprocessing.png)
-![Multithreading](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Performance/Multithreading.png)
-
-> ✅ **V3 - Multiprocessing with Nested Multithreading is the fastest overall**, with up to 40% improvement over sequential processing.
+![ResultComparision](https://github.com/Harmit485/Encrypt-Decrypt/blob/main/Results/EncDecCompare.png)
 
 ---
 
 ## 🔧 Build Instructions
 
 ### Prerequisites
-- C++17 or later
-- Python 3 (for test file generation)
 
-### 🛠️ Build the Project
+* `g++` with **C++17** support
+* `Python 3` for test data generation
+
+### Build the Project
 
 ```bash
 make
-````
+```
 
-### 🧪 Generate Test Files
+### Generate Test Files
 
 ```bash
 python3 makeDirs.py
@@ -104,36 +133,37 @@ python3 makeDirs.py
 ./encrypt_decrypt
 ```
 
-Then follow the prompts:
+And follow the prompts:
 
 ```
 Enter the directory path : test
 Enter the action (encryption/decryption) : ENCRYPT/DECRYPT
+Enter the version (V1/V2/V3) : 1/2/3
 ```
 
 ---
 
 ## 🔍 Internals Breakdown
 
-| Component           | Purpose                                                             |
-| ------------------- | ------------------------------------------------------------------- |
-| `Cryption`          | File-level byte-wise encryption/decryption                          |
-| `ProcessManagement` | Spawns worker threads/processes, manages shared memory + semaphores |
-| `Task`              | Serializable structure representing a file + operation              |
-| `IO`                | Handles safe opening and management of file streams                 |
-| `ReadEnv`           | Reads the key from the `.env` file for encryption logic             |
+| Component           | Purpose                                                         |
+| ------------------- | --------------------------------------------------------------- |
+| `Cryption`          | Byte-wise encryption/decryption logic                           |
+| `ProcessManagement` | Manages process/thread spawning, synchronization via semaphores |
+| `Task`              | Represents a unit of work for encryption/decryption             |
+| `IO`                | Robust input/output file stream management                      |
+| `ReadEnv`           | Parses `.env` to securely fetch the secret encryption key       |
 
 ---
 
-## 🤓 Example
+## Example
 
-Original `test003.txt`:
+Original `test1.txt`:
 
 ```
 HelloWorld123
 ```
 
-After encryption with `KEY=5`:
+Encrypted with `KEY=5`:
 
 ```
 MjqqtBtwqi678
@@ -143,6 +173,6 @@ MjqqtBtwqi678
 
 ## 💡 Fun Fact
 
-This project can handle 999+ files concurrently using shared memory and semaphores — just run the generator and enjoy watching your CPU flex its muscles.
+The hybrid version (V3) can handle **10,000 files with 100,000 characters each** in **\~2 seconds**, thanks to intelligent use of **shared memory**, **child processes**, and **nested threads**.
 
 ---
